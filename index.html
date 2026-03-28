@@ -420,6 +420,17 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
   </div>
   <div class="sbody">
     <div class="home-body">
+      <!-- Unlock Banner -->
+      <div style="background: linear-gradient(135deg, var(--saffron), #A9CFC9); color: var(--white); border-radius: 16px; padding: 20px; box-shadow: 0 8px 16px rgba(47, 143, 139, 0.25); margin-bottom: 24px; display: flex; flex-direction: column; align-items: start; gap: 12px; position:relative; overflow:hidden;">
+        <div style="position:absolute; top:-20px; right:-20px; opacity:0.1; font-size:100px;"><i class="ph ph-flower-lotus"></i></div>
+        <div style="display: flex; align-items: center; gap: 8px; position:relative; z-index:1;">
+           <i class="ph ph-sparkle" style="font-size: 24px;"></i>
+           <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Unlock deeper understanding</h3>
+        </div>
+        <p style="font-size: 13px; margin: 0; line-height: 1.4; opacity: 0.95; position:relative; z-index:1;">Experience the full journey with unlimited AR tours, exclusive audio guides, and ad-free learning.</p>
+        <button style="background: var(--white); color: var(--saffron); border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; font-size: 13px; margin-top: 4px; cursor: pointer; position:relative; z-index:1; display:flex; align-items:center; gap:6px;" onclick="showToast('Upgrade flow coming soon!')">Experience the full journey <i class="ph ph-arrow-right" style="font-weight:bold;"></i></button>
+      </div>
+
       <div class="sec-hdr">Categories <span class="see-all" onclick="goTo('s-explore')">See all</span></div>
       <div class="cats">
         <div class="cat on" onclick="selCat(this)"><div class="cat-ic">🛕</div><div class="cat-lb">Hindu</div></div>
@@ -879,6 +890,18 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
         <div class="stat-c"><div class="stat-n">38</div><div class="stat-l">Quizzes Done</div></div>
         <div class="stat-c"><div class="stat-n">4</div><div class="stat-l">Religions</div></div>
       </div>
+      
+      <!-- Unlock Banner (Profile) -->
+      <div style="background: linear-gradient(135deg, var(--saffron), var(--green)); color: var(--white); border-radius: 16px; padding: 20px; box-shadow: 0 8px 16px rgba(47, 143, 139, 0.25); margin: 24px 0 8px; display: flex; flex-direction: column; align-items: start; gap: 12px; position:relative; overflow:hidden;">
+        <div style="position:absolute; bottom:-10px; right:-10px; opacity:0.1; font-size:100px;"><i class="ph ph-sparkle"></i></div>
+        <div style="display: flex; align-items: center; gap: 8px; position:relative; z-index:1;">
+           <i class="ph ph-star" style="font-size: 24px;"></i>
+           <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Unlock deeper understanding</h3>
+        </div>
+        <p style="font-size: 13px; margin: 0; line-height: 1.4; opacity: 0.95; position:relative; z-index:1;">Experience the full journey to collect premium badges, access exclusive quizzes, and read expert archives.</p>
+        <button style="background: var(--white); color: var(--saffron); border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; font-size: 13px; margin-top: 4px; cursor: pointer; position:relative; z-index:1; display:flex; align-items:center; gap:6px;" onclick="showToast('Upgrade flow coming soon!')">Experience the full journey <i class="ph ph-arrow-right" style="font-weight:bold;"></i></button>
+      </div>
+
       <div class="sec-hdr" style="margin-bottom:10px">Badges Earned</div>
       <div class="badges-r">
         <div class="badge"><div class="badge-ic">🏆</div><div class="badge-nm">Top Learner</div></div>
