@@ -4,20 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HarmonyMap</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --saffron:#E85D04;--saffron-l:#FFF3EC;--saffron-d:#9C2E00;
-  --teal:#1B4965;--teal-l:#C9E4F7;--teal-d:#0D2B3E;
-  --green:#2D6A4F;--green-l:#B7E4C7;
-  --gold:#FFB703;
-  --cream:#FFF8F0;--bg:#EDE8E1;
-  --dark:#1A1A2E;--muted:#6B6B80;--border:#E5DDD5;
+  /* Original Teal/Gold Theme */
+  --saffron:#2F8F8B;--saffron-l:#E0FEFD;--saffron-d:#1A5A58;
+  --teal:#DDB874;--teal-l:#FDF7EA;--teal-d:#8A7140;
+  --green:#5FAFA9;--green-l:#E5F7F5;
+  --gold:#A9CFC9;
+  --cream:#FFFFFF;--bg:#F8F9FA;
+  --dark:#2B2B2B;--muted:#6F6F6F;--border:#E6D3A3;
   --white:#FFFFFF;
   --r:18px;
 }
-body{background:var(--bg);display:flex;justify-content:center;align-items:flex-start;padding:24px 12px;font-family:'DM Sans',sans-serif;min-height:100vh}
+body{background:var(--bg);display:flex;justify-content:center;align-items:flex-start;padding:24px 12px;font-family:'Inter',sans-serif;min-height:100vh}
 .outer{display:flex;flex-direction:column;align-items:center;gap:10px}
 .phone-label{font-size:12px;color:var(--muted);letter-spacing:.5px}
 
@@ -317,11 +319,11 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
   <div class="splash-body">
     <div class="splash-deco"></div>
     <div class="splash-deco2"></div>
-    <div class="splash-logo">🗺️</div>
+    <div class="splash-logo"><i class="ph ph-flower-lotus" style="color:var(--saffron)"></i></div>
     <h1 class="splash">HarmonyMap</h1>
     <p class="splash">Discover India's rich cultural heritage — temples, mosques, festivals, rituals, and traditions — all in one place.</p>
-    <button class="btn-primary" onclick="goTo('s-onboard')">Get Started →</button>
-    <button class="btn-outline" onclick="goTo('s-home')">I already have an account</button>
+    <button class="btn-primary" onclick="goTo('s-auth')">Get Started →</button>
+    <button class="btn-outline" onclick="goTo('s-auth')">I already have an account</button>
     <div class="splash-tagline">Bridging cultures through learning</div>
   </div>
 </div>
@@ -369,6 +371,40 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
     </div>
   </div>
   <button class="ob-next" id="ob-next-btn" onclick="obNext()">Continue →</button>
+</div>
+
+<!-- ===== AUTH ===== -->
+<div class="screen" id="s-auth">
+  <div class="sbar" style="background:var(--white)"><span>9:41</span><span>⚡ 87%</span></div>
+  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content:center; padding: 40px 24px;">
+      <h2 style="margin-bottom: 32px; color: var(--saffron);">Login / Sign Up</h2>
+      
+      <div style="width: 80px; height: 80px; border-radius: 20px; background: var(--saffron-l); display: flex; align-items: center; justify-content: center; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(47, 143, 139, 0.2);">
+          <i class="ph ph-flower-lotus" style="font-size: 40px; color: var(--saffron);"></i>
+      </div>
+      
+      <form id="auth-form" class="w-100" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; width: 100%;">
+          <input type="email" placeholder="Email address" style="width:100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 15px; background: var(--white);" required>
+          <input type="password" placeholder="Password" style="width:100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 15px; background: var(--white);" required>
+          
+          <button type="submit" class="btn-primary" style="margin-top:8px;" onclick="event.preventDefault(); goTo('s-home')">LOG IN</button>
+      </form>
+
+      <div style="width: 100%; display: flex; justify-content: space-between; font-size: 13px;">
+          <a href="#" style="color: var(--muted); text-decoration: none;">Forgot password?</a>
+          <a href="#" style="color: var(--saffron); font-weight: 600; text-decoration: none;">Sign Up</a>
+      </div>
+
+      <div style="display: flex; align-items: center; width: 100%; margin: 32px 0;">
+          <div style="flex: 1; height: 1px; background: var(--border);"></div>
+          <span style="padding: 0 16px; color: var(--muted); font-size: 14px;">or continue with</span>
+          <div style="flex: 1; height: 1px; background: var(--border);"></div>
+      </div>
+
+      <button type="button" class="btn-outline" style="border-color: var(--border); color: var(--dark); background: var(--white);" onclick="goTo('s-home')">
+          <i class="ph ph-google-logo" style="margin-right: 8px;"></i> Google Sign-in
+      </button>
+  </div>
 </div>
 
 <!-- ===== HOME ===== -->
@@ -437,6 +473,7 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
   <div class="bnav">
     <button class="ni on" onclick="navTo('s-home',this)"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button>
     <button class="ni" onclick="navTo('s-map',this)"><span class="ni-icon">🗺️</span><span class="ni-lbl">Map</span></button>
+    <button class="ni" onclick="navTo('s-games',this)"><span class="ni-icon">🎮</span><span class="ni-lbl">Games</span></button>
     <button class="ni" onclick="navTo('s-quiz',this)"><span class="ni-icon">🎯</span><span class="ni-lbl">Quizzes</span></button>
     <button class="ni" onclick="navTo('s-profile',this)"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></button>
   </div>
@@ -524,6 +561,7 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
   <div class="bnav">
     <button class="ni" onclick="navTo('s-home',this)"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button>
     <button class="ni on" onclick="navTo('s-map',this)"><span class="ni-icon">🗺️</span><span class="ni-lbl">Map</span></button>
+    <button class="ni" onclick="navTo('s-games',this)"><span class="ni-icon">🎮</span><span class="ni-lbl">Games</span></button>
     <button class="ni" onclick="navTo('s-quiz',this)"><span class="ni-icon">🎯</span><span class="ni-lbl">Quizzes</span></button>
     <button class="ni" onclick="navTo('s-profile',this)"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></button>
   </div>
@@ -681,6 +719,69 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
   </div>
 </div>
 
+<!-- ===== GAMES ===== -->
+<div class="screen" id="s-games">
+  <div class="sbar" style="background:var(--teal)"><span>9:41</span><span>⚡ 87%</span></div>
+  <div class="map-hdr" style="background:var(--teal); justify-content:center;">
+    <button class="hero-back" style="position:absolute; left:20px;" onclick="goBack()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h2>Mini Games</h2>
+  </div>
+  <div class="sbody" style="padding: 24px 20px; background:var(--bg);">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; align-items: center; background: var(--white); padding: 16px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--saffron-l); color: var(--saffron); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-right: 16px;">
+                  <i class="ph ph-map-trifold"></i>
+              </div>
+              <div style="flex: 1;">
+                  <h4 style="font-size: 15px; margin: 0 0 4px 0; color: var(--dark);">Cultural Discovery Hunt</h4>
+                  <p style="font-size: 12px; color: var(--teal-d); margin: 0; font-weight: 600;">+200 pts</p>
+              </div>
+              <button style="background: var(--dark); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="showToast('Loading game...')">PLAY</button>
+          </div>
+          <!-- Game 2 -->
+          <div style="display: flex; align-items: center; background: var(--white); padding: 16px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--green-l); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-right: 16px;">
+                  <i class="ph ph-puzzle-piece"></i>
+              </div>
+              <div style="flex: 1;">
+                  <h4 style="font-size: 15px; margin: 0 0 4px 0; color: var(--dark);">Symbol Match</h4>
+                  <p style="font-size: 12px; color: var(--teal-d); margin: 0; font-weight: 600;">+150 pts</p>
+              </div>
+              <button style="background: var(--dark); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="showToast('Loading game...')">PLAY</button>
+          </div>
+          <!-- Game 3 -->
+          <div style="display: flex; align-items: center; background: var(--white); padding: 16px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--teal-l); color: var(--teal-d); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-right: 16px;">
+                  <i class="ph ph-soup"></i>
+              </div>
+              <div style="flex: 1;">
+                  <h4 style="font-size: 15px; margin: 0 0 4px 0; color: var(--dark);">Langar Challenge</h4>
+                  <p style="font-size: 12px; color: var(--teal-d); margin: 0; font-weight: 600;">+300 pts</p>
+              </div>
+              <button style="background: var(--dark); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="showToast('Loading game...')">PLAY</button>
+          </div>
+          <!-- Game 4 -->
+          <div style="display: flex; align-items: center; background: var(--white); padding: 16px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--saffron-l); color: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-right: 16px;">
+                  <i class="ph ph-handshake"></i>
+              </div>
+              <div style="flex: 1;">
+                  <h4 style="font-size: 15px; margin: 0 0 4px 0; color: var(--dark);">Peace Builder</h4>
+                  <p style="font-size: 12px; color: var(--teal-d); margin: 0; font-weight: 600;">+100 pts</p>
+              </div>
+              <button style="background: var(--dark); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="showToast('Loading game...')">PLAY</button>
+          </div>
+      </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="navTo('s-home',this)"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button>
+    <button class="ni" onclick="navTo('s-map',this)"><span class="ni-icon">🗺️</span><span class="ni-lbl">Map</span></button>
+    <button class="ni on" onclick="navTo('s-games',this)"><span class="ni-icon">🎮</span><span class="ni-lbl">Games</span></button>
+    <button class="ni" onclick="navTo('s-quiz',this)"><span class="ni-icon">🎯</span><span class="ni-lbl">Quizzes</span></button>
+    <button class="ni" onclick="navTo('s-profile',this)"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></button>
+  </div>
+</div>
+
 <!-- ===== QUIZ ===== -->
 <div class="screen" id="s-quiz">
   <div class="sbar" style="background:var(--teal)"><span>9:41</span><span>⚡ 87%</span></div>
@@ -720,6 +821,7 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
   <div class="bnav">
     <button class="ni" onclick="navTo('s-home',this)"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button>
     <button class="ni" onclick="navTo('s-map',this)"><span class="ni-icon">🗺️</span><span class="ni-lbl">Map</span></button>
+    <button class="ni" onclick="navTo('s-games',this)"><span class="ni-icon">🎮</span><span class="ni-lbl">Games</span></button>
     <button class="ni on" onclick="navTo('s-quiz',this)"><span class="ni-icon">🎯</span><span class="ni-lbl">Quizzes</span></button>
     <button class="ni" onclick="navTo('s-profile',this)"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></button>
   </div>
@@ -798,6 +900,7 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
   <div class="bnav">
     <button class="ni" onclick="navTo('s-home',this)"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button>
     <button class="ni" onclick="navTo('s-map',this)"><span class="ni-icon">🗺️</span><span class="ni-lbl">Map</span></button>
+    <button class="ni" onclick="navTo('s-games',this)"><span class="ni-icon">🎮</span><span class="ni-lbl">Games</span></button>
     <button class="ni" onclick="navTo('s-quiz',this)"><span class="ni-icon">🎯</span><span class="ni-lbl">Quizzes</span></button>
     <button class="ni on" onclick="navTo('s-profile',this)"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></button>
   </div>
@@ -810,7 +913,7 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
 <script>
 var navHistory=[];
 var current='s-splash';
-var screenNames={'s-splash':'Splash Screen','s-onboard':'Onboarding','s-home':'Home','s-map':'Cultural Map','s-detail':'Place Detail','s-ar':'AR Experience','s-explore':'Explore Cultures','s-quiz':'Mini Quiz','s-audio':'Audio Guide','s-profile':'Profile'};
+var screenNames={'s-splash':'Splash Screen','s-auth':'Authentication','s-onboard':'Onboarding','s-home':'Home','s-map':'Cultural Map','s-games':'Mini Games','s-detail':'Place Detail','s-ar':'AR Experience','s-explore':'Explore Cultures','s-quiz':'Mini Quiz','s-audio':'Audio Guide','s-profile':'Profile'};
 var obStep=1;
 var qIndex=0;
 var qScore=0;
@@ -849,7 +952,7 @@ function goBack(){
 }
 
 function navTo(id,btn){
-  document.querySelectorAll('#s-home .ni,#s-map .ni,#s-quiz .ni,#s-profile .ni').forEach(function(n){n.classList.remove('on');});
+  document.querySelectorAll('#s-home .ni,#s-map .ni,#s-games .ni,#s-quiz .ni,#s-profile .ni').forEach(function(n){n.classList.remove('on');});
   if(btn)btn.classList.add('on');
   navHistory=[];
   var from=document.getElementById(current);
@@ -870,7 +973,7 @@ function selOb(el){
 
 function obNext(){
   if(!obSelected){showToast('Please select an option');return;}
-  if(obStep===3){goTo('s-home');return;}
+  if(obStep===3){goTo('s-auth');return;}
   document.getElementById('ob-p'+obStep).style.display='none';
   obStep++;
   document.getElementById('ob-p'+obStep).style.display='block';
