@@ -1,55 +1,1009 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HarmonyMap</title>
-    <!-- Phosphor Icons for modern light icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="app">
-        <!-- Main dynamic content container -->
-        <main id="main-content"></main>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HarmonyMap</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --saffron:#E85D04;--saffron-l:#FFF3EC;--saffron-d:#9C2E00;
+  --teal:#1B4965;--teal-l:#C9E4F7;--teal-d:#0D2B3E;
+  --green:#2D6A4F;--green-l:#B7E4C7;
+  --gold:#FFB703;
+  --cream:#FFF8F0;--bg:#EDE8E1;
+  --dark:#1A1A2E;--muted:#6B6B80;--border:#E5DDD5;
+  --white:#FFFFFF;
+  --r:18px;
+}
+body{background:var(--bg);display:flex;justify-content:center;align-items:flex-start;padding:24px 12px;font-family:'DM Sans',sans-serif;min-height:100vh}
+.outer{display:flex;flex-direction:column;align-items:center;gap:10px}
+.phone-label{font-size:12px;color:var(--muted);letter-spacing:.5px}
 
-        <!-- Bottom Navigation Bar (Hidden by default on Splash/Auth) -->
-        <nav id="bottom-nav" style="display: none;">
-            <a href="#/" class="nav-item active" data-route="/">
-                <i class="ph ph-house"></i>
-                <span>Home</span>
-            </a>
-            <a href="#/map" class="nav-item" data-route="/map">
-                <i class="ph ph-map-pin"></i>
-                <span>Map</span>
-            </a>
-            <a href="#/games" class="nav-item" data-route="/games">
-                <i class="ph ph-game-controller"></i>
-                <span>Games</span>
-            </a>
-            <a href="#/events" class="nav-item" data-route="/events">
-                <i class="ph ph-calendar-star"></i>
-                <span>Events</span>
-            </a>
-            <a href="#/profile" class="nav-item" data-route="/profile">
-                <i class="ph ph-user"></i>
-                <span>Profile</span>
-            </a>
-        </nav>
+/* PHONE SHELL */
+.phone{width:360px;height:740px;background:var(--cream);border-radius:40px;overflow:hidden;border:2px solid #C8BFB5;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(60px);transition:opacity .32s ease,transform .32s ease;overflow:hidden}
+.screen.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.screen.exit-left{opacity:0;transform:translateX(-60px);transition:opacity .25s ease,transform .25s ease}
+
+/* STATUS BAR */
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:12px 22px 8px;flex-shrink:0}
+.sbar span{font-size:11px;font-weight:500;color:rgba(255,255,255,.9)}
+.sbar.dark span{color:var(--dark)}
+
+/* SCROLLABLE BODY */
+.sbody{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.sbody::-webkit-scrollbar{display:none}
+
+/* BOTTOM NAV */
+.bnav{display:flex;justify-content:space-around;padding:10px 0 16px;background:var(--white);border-top:1px solid var(--border);flex-shrink:0}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:0 14px;border:none;background:none;font-family:'DM Sans',sans-serif;transition:transform .15s}
+.ni:active{transform:scale(.92)}
+.ni-icon{font-size:20px}
+.ni-lbl{font-size:10px;color:var(--muted);font-weight:500}
+.ni.on .ni-lbl{color:var(--saffron)}
+
+/* ===================== SPLASH ===================== */
+#s-splash{background:var(--saffron)}
+#s-splash .sbar span{color:rgba(255,255,255,.9)}
+.splash-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 28px;text-align:center;position:relative;overflow:hidden}
+.splash-deco{position:absolute;width:300px;height:300px;border-radius:50%;border:40px solid rgba(255,255,255,.06);top:-80px;right:-80px}
+.splash-deco2{position:absolute;width:200px;height:200px;border-radius:50%;border:30px solid rgba(255,255,255,.05);bottom:-60px;left:-60px}
+.splash-logo{width:88px;height:88px;background:var(--white);border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:22px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.splash h1{font-family:'Playfair Display',serif;font-size:36px;color:var(--white);line-height:1.1;margin-bottom:10px}
+.splash p{color:rgba(255,255,255,.8);font-size:14px;line-height:1.7;margin-bottom:36px}
+.splash-tagline{color:rgba(255,255,255,.5);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-top:22px}
+.btn-primary{background:var(--white);color:var(--saffron-d);border:none;padding:15px 32px;border-radius:50px;font-size:15px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;width:100%;margin-bottom:10px;transition:transform .15s,box-shadow .15s}
+.btn-primary:active{transform:scale(.97)}
+.btn-outline{background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,.5);padding:13px 32px;border-radius:50px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;width:100%;transition:transform .15s}
+.btn-outline:active{transform:scale(.97)}
+
+/* ===================== ONBOARDING ===================== */
+#s-onboard{background:var(--white)}
+.onboard-header{background:var(--teal);padding:22px 22px 26px;color:var(--white)}
+.onboard-header h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px}
+.onboard-header p{font-size:13px;color:rgba(255,255,255,.75);line-height:1.6}
+.ob-step{padding:20px 20px 10px;display:flex;gap:8px;margin-bottom:4px}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:var(--border)}
+.ob-dot.on{background:var(--teal);width:22px;border-radius:4px}
+.ob-body{padding:0 20px 20px}
+.ob-q{font-size:16px;font-weight:500;color:var(--dark);margin-bottom:14px;line-height:1.4}
+.ob-opts{display:flex;flex-direction:column;gap:10px}
+.ob-opt{background:var(--cream);border:2px solid var(--border);border-radius:14px;padding:14px 16px;font-size:14px;color:var(--dark);cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s;font-family:'DM Sans',sans-serif;text-align:left}
+.ob-opt.sel{border-color:var(--teal);background:var(--teal-l);color:var(--teal-d)}
+.ob-opt:active{transform:scale(.98)}
+.ob-icon{font-size:22px;width:36px;text-align:center;flex-shrink:0}
+.ob-next{margin:20px 20px 0;background:var(--teal);color:var(--white);border:none;padding:15px;border-radius:16px;font-size:15px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;width:calc(100% - 40px);transition:transform .15s}
+.ob-next:active{transform:scale(.97)}
+
+/* ===================== HOME ===================== */
+#s-home .sbar{background:var(--saffron)}
+.home-hdr{background:var(--saffron);padding:4px 22px 22px}
+.home-hdr .greet{color:rgba(255,255,255,.8);font-size:13px;margin-bottom:3px}
+.home-hdr h2{font-family:'Playfair Display',serif;color:var(--white);font-size:24px;margin-bottom:14px}
+.search{background:var(--white);border-radius:14px;padding:11px 16px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.search span{color:var(--muted);font-size:13px}
+.home-body{padding:18px}
+.sec-hdr{font-size:14px;font-weight:500;color:var(--dark);margin-bottom:12px;display:flex;justify-content:space-between}
+.see-all{color:var(--saffron);font-size:12px;cursor:pointer}
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:22px}
+.cat{background:var(--white);border-radius:14px;padding:11px 6px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.cat.on{border-color:var(--saffron);background:var(--saffron-l)}
+.cat:active{transform:scale(.94)}
+.cat-ic{font-size:22px;margin-bottom:4px}
+.cat-lb{font-size:10px;color:var(--muted);font-weight:500}
+.feat{background:var(--teal);border-radius:20px;padding:18px;margin-bottom:22px;cursor:pointer;transition:transform .15s;position:relative;overflow:hidden}
+.feat::after{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;background:rgba(255,255,255,.04);border-radius:50%}
+.feat:active{transform:scale(.98)}
+.feat-tag{background:var(--gold);color:var(--dark);font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px}
+.feat h3{font-family:'Playfair Display',serif;color:var(--white);font-size:18px;margin-bottom:6px}
+.feat p{color:rgba(255,255,255,.7);font-size:12px;line-height:1.6}
+.feat-btn{background:var(--white);color:var(--teal);border:none;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:500;margin-top:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.places{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:22px;scrollbar-width:none}
+.places::-webkit-scrollbar{display:none}
+.pcard{min-width:120px;background:var(--white);border-radius:14px;overflow:hidden;cursor:pointer;flex-shrink:0;transition:transform .15s}
+.pcard:active{transform:scale(.95)}
+.pcard-img{height:70px;display:flex;align-items:center;justify-content:center;font-size:30px}
+.pcard-inf{padding:8px 10px}
+.pcard-name{font-size:12px;font-weight:500;color:var(--dark)}
+.pcard-loc{font-size:10px;color:var(--muted);margin-top:2px}
+.upcoming{display:flex;flex-direction:column;gap:10px}
+.ev-card{background:var(--white);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .15s}
+.ev-card:active{transform:scale(.98)}
+.ev-date{background:var(--saffron-l);border-radius:10px;padding:8px 10px;text-align:center;flex-shrink:0}
+.ev-day{font-size:18px;font-weight:500;color:var(--saffron-d);line-height:1}
+.ev-mon{font-size:10px;color:var(--saffron);font-weight:500;margin-top:2px}
+.ev-title{font-size:13px;font-weight:500;color:var(--dark)}
+.ev-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.ev-badge{margin-left:auto;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;flex-shrink:0}
+
+/* ===================== MAP ===================== */
+#s-map .sbar{background:var(--saffron)}
+.map-hdr{background:var(--saffron);padding:4px 20px 14px;display:flex;align-items:center;gap:10px}
+.back-btn{width:34px;height:34px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;flex-shrink:0;transition:transform .15s}
+.back-btn:active{transform:scale(.9)}
+.back-btn svg{display:block}
+.map-hdr h2{font-family:'Playfair Display',serif;color:var(--white);font-size:19px}
+.map-area{height:250px;background:#C8DFC8;position:relative;overflow:hidden;flex-shrink:0}
+.map-svg{position:absolute;inset:0;width:100%;height:100%}
+.pin{position:absolute;cursor:pointer;transform:translate(-50%,-100%);transition:transform .15s}
+.pin:active{transform:translate(-50%,-100%) scale(1.15)}
+.pin-dot{width:34px;height:34px;background:var(--saffron);border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.pin-dot span{transform:rotate(45deg);font-size:15px}
+.pin-lbl{background:var(--white);border-radius:8px;padding:3px 8px;font-size:10px;font-weight:500;white-space:nowrap;position:absolute;bottom:40px;left:50%;transform:translateX(-50%);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.map-ctrl{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:6px}
+.mc-btn{width:32px;height:32px;background:var(--white);border:none;border-radius:8px;font-size:15px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 4px;scrollbar-width:none;flex-shrink:0}
+.chips::-webkit-scrollbar{display:none}
+.chip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;border:1.5px solid var(--border);background:var(--white);color:var(--muted);transition:all .2s}
+.chip.on{background:var(--saffron);color:var(--white);border-color:var(--saffron)}
+.chip:active{transform:scale(.95)}
+.loc-list{padding:8px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.loc-item{background:var(--white);border-radius:14px;padding:12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .15s}
+.loc-item:active{transform:scale(.98)}
+.loc-em{width:46px;height:46px;background:var(--saffron-l);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.loc-name{font-size:14px;font-weight:500;color:var(--dark)}
+.loc-type{font-size:11px;color:var(--muted);margin-top:2px}
+.loc-badge{margin-left:auto;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;flex-shrink:0;background:var(--green-l);color:var(--green)}
+
+/* ===================== DETAIL ===================== */
+#s-detail .sbar{background:transparent;position:absolute;top:0;left:0;right:0;z-index:2}
+.detail-hero{height:200px;background:linear-gradient(135deg,#2D6A4F,#1B4965);display:flex;align-items:center;justify-content:center;font-size:72px;flex-shrink:0;position:relative}
+.hero-back{position:absolute;top:48px;left:16px;width:36px;height:36px;background:rgba(0,0,0,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:transform .15s}
+.hero-back:active{transform:scale(.9)}
+.hero-bm{position:absolute;top:48px;right:16px;width:36px;height:36px;background:rgba(0,0,0,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-size:16px;transition:transform .15s}
+.hero-bm:active{transform:scale(.9)}
+.detail-body{padding:18px;flex:1;overflow-y:auto;scrollbar-width:none}
+.detail-body::-webkit-scrollbar{display:none}
+.detail-body h2{font-family:'Playfair Display',serif;font-size:22px;color:var(--dark)}
+.detail-sub{color:var(--muted);font-size:13px;margin-top:4px;margin-bottom:14px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tag{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500}
+.tag-r{background:var(--saffron-l);color:var(--saffron-d)}
+.tag-s{background:var(--teal-l);color:var(--teal)}
+.tag-a{background:var(--green-l);color:var(--green)}
+.detail-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.act-btn{border:none;border-radius:14px;padding:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .15s}
+.act-btn:active{transform:scale(.96)}
+.act-primary{background:var(--saffron);color:var(--white);grid-column:1/-1}
+.act-sec{background:var(--white);color:var(--dark);border:1.5px solid var(--border)}
+.d-sec-title{font-size:13px;font-weight:500;color:var(--dark);margin-bottom:10px}
+.d-text{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:18px}
+.ritual-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.ritual{background:var(--white);border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:transform .15s}
+.ritual:active{transform:scale(.97)}
+.r-ic{width:34px;height:34px;background:var(--saffron-l);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.r-name{font-size:13px;font-weight:500;color:var(--dark)}
+.r-dur{font-size:11px;color:var(--muted);margin-top:1px}
+.r-play{margin-left:auto;width:28px;height:28px;background:var(--saffron);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--white);flex-shrink:0}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.gal-item{aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:transform .15s}
+.gal-item:active{transform:scale(.93)}
+
+/* ===================== AR SCREEN ===================== */
+#s-ar .sbar{background:transparent;position:absolute;top:0;left:0;right:0;z-index:2}
+#s-ar .sbar span{color:var(--white)}
+.ar-cam{height:100%;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.ar-grid{position:absolute;inset:0;opacity:.15}
+.ar-crosshair{width:140px;height:140px;border:2px solid rgba(255,255,255,.6);border-radius:16px;position:relative}
+.ar-tl,.ar-tr,.ar-bl,.ar-br{position:absolute;width:20px;height:20px;border-color:var(--saffron);border-style:solid}
+.ar-tl{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.ar-tr{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+.ar-bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+.ar-br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+.ar-scan{position:absolute;width:100%;height:2px;background:var(--saffron);opacity:.8;animation:scan 2.4s ease-in-out infinite}
+@keyframes scan{0%,100%{top:0}50%{top:138px}}
+.ar-label{color:rgba(255,255,255,.7);font-size:12px;margin-top:20px;text-align:center;line-height:1.5}
+.ar-info{position:absolute;bottom:110px;left:20px;right:20px;background:rgba(0,0,0,.6);border-radius:16px;padding:14px 16px;backdrop-filter:blur(4px)}
+.ar-info h3{font-family:'Playfair Display',serif;color:var(--white);font-size:16px;margin-bottom:4px}
+.ar-info p{color:rgba(255,255,255,.7);font-size:12px;line-height:1.5}
+.ar-btns{position:absolute;bottom:20px;left:20px;right:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ar-btn{background:rgba(255,255,255,.15);color:var(--white);border:1.5px solid rgba(255,255,255,.3);border-radius:14px;padding:13px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:transform .15s}
+.ar-btn:active{transform:scale(.96)}
+.ar-back{position:absolute;top:50px;left:16px;width:36px;height:36px;background:rgba(0,0,0,.4);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;z-index:5}
+
+/* ===================== QUIZ ===================== */
+#s-quiz .sbar{background:var(--teal)}
+.quiz-hdr{background:var(--teal);padding:4px 20px 16px;display:flex;align-items:center;gap:10px}
+.quiz-hdr h2{font-family:'Playfair Display',serif;color:var(--white);font-size:18px}
+.prog-track{height:4px;background:rgba(255,255,255,.2);border-radius:2px;flex:1}
+.prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s ease}
+.quiz-body{padding:20px 18px;flex:1;overflow-y:auto;scrollbar-width:none}
+.quiz-body::-webkit-scrollbar{display:none}
+.streak{background:var(--gold);color:var(--dark);padding:10px 14px;border-radius:14px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;margin-bottom:16px}
+.q-num{font-size:12px;color:var(--muted);margin-bottom:8px}
+.q-text{font-family:'Playfair Display',serif;font-size:19px;color:var(--dark);line-height:1.4;margin-bottom:20px}
+.q-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.q-opt{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:14px 16px;font-size:14px;color:var(--dark);cursor:pointer;transition:all .2s;text-align:left;font-family:'DM Sans',sans-serif;width:100%}
+.q-opt:hover{border-color:var(--teal);background:var(--teal-l)}
+.q-opt:active{transform:scale(.98)}
+.q-opt.correct{border-color:var(--green);background:var(--green-l);color:var(--green)}
+.q-opt.wrong{border-color:#E24B4A;background:#FFF0F0;color:#A32D2D}
+.q-feedback{background:var(--green-l);border-radius:14px;padding:13px 15px;border-left:3px solid var(--green);margin-bottom:16px}
+.q-feedback.wrong-fb{background:#FFF0F0;border-color:#E24B4A}
+.q-fb-title{font-size:12px;font-weight:500;color:var(--green);margin-bottom:4px}
+.q-fb-title.wrong{color:#A32D2D}
+.q-fb-text{font-size:12px;color:var(--muted);line-height:1.6}
+.q-next{width:100%;background:var(--teal);color:var(--white);border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:transform .15s}
+.q-next:active{transform:scale(.97)}
+.q-result{text-align:center;padding:30px 20px}
+.q-result .trophy{font-size:60px;margin-bottom:16px}
+.q-result h2{font-family:'Playfair Display',serif;font-size:26px;color:var(--dark);margin-bottom:8px}
+.q-result p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px}
+.score-circle{width:100px;height:100px;border-radius:50%;background:var(--teal);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 24px}
+.score-num{font-family:'Playfair Display',serif;font-size:28px;color:var(--white)}
+.score-lbl{font-size:10px;color:rgba(255,255,255,.7)}
+
+/* ===================== EXPLORE ===================== */
+#s-explore .sbar{background:var(--teal)}
+.exp-hdr{background:var(--teal);padding:4px 20px 16px;display:flex;align-items:center;gap:10px}
+.exp-hdr h2{font-family:'Playfair Display',serif;color:var(--white);font-size:19px}
+.exp-body{padding:16px}
+.rel-card{background:var(--white);border-radius:16px;margin-bottom:14px;overflow:hidden;cursor:pointer;transition:transform .15s}
+.rel-card:active{transform:scale(.98)}
+.rel-top{height:80px;display:flex;align-items:center;justify-content:center;font-size:40px}
+.rel-body{padding:14px}
+.rel-body h3{font-family:'Playfair Display',serif;font-size:17px;color:var(--dark);margin-bottom:4px}
+.rel-body p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.rel-facts{display:flex;gap:8px;flex-wrap:wrap}
+.fact-pill{background:var(--saffron-l);color:var(--saffron-d);font-size:11px;padding:4px 10px;border-radius:20px;font-weight:500}
+
+/* ===================== PROFILE ===================== */
+#s-profile .sbar{background:var(--saffron)}
+.prof-hdr{background:var(--saffron);padding:4px 20px 22px;text-align:center}
+.avatar{width:72px;height:72px;background:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 10px}
+.prof-hdr h2{font-family:'Playfair Display',serif;color:var(--white);font-size:19px}
+.prof-level{color:rgba(255,255,255,.75);font-size:12px;margin-top:2px}
+.prof-xp{background:rgba(255,255,255,.2);border-radius:8px;height:6px;margin:10px 30px 0;overflow:hidden}
+.prof-xp-fill{height:100%;background:var(--white);border-radius:8px;width:62%}
+.prof-body{padding:16px}
+.stats-g{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.stat-c{background:var(--white);border-radius:14px;padding:13px 8px;text-align:center}
+.stat-n{font-size:24px;font-weight:500;color:var(--saffron-d);font-family:'Playfair Display',serif}
+.stat-l{font-size:10px;color:var(--muted);margin-top:2px}
+.badges-r{display:flex;gap:10px;margin-bottom:20px}
+.badge{background:var(--white);border-radius:14px;padding:12px;flex:1;text-align:center}
+.badge-ic{font-size:24px;margin-bottom:4px}
+.badge-nm{font-size:10px;color:var(--muted);font-weight:500}
+.prog-sect{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.prog-item{background:var(--white);border-radius:14px;padding:12px 14px}
+.prog-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;color:var(--dark);font-weight:500}
+.prog-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.prog-f{height:100%;border-radius:3px}
+.settings-btn{width:100%;background:var(--white);color:var(--dark);border:1.5px solid var(--border);border-radius:14px;padding:13px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:4px;transition:transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.settings-btn:active{transform:scale(.97)}
+
+/* ===================== AUDIO PLAYER ===================== */
+#s-audio .sbar{background:var(--dark)}
+.audio-hdr{background:var(--dark);padding:4px 20px 20px;display:flex;align-items:center;gap:10px}
+.audio-hdr h2{font-family:'Playfair Display',serif;color:var(--white);font-size:18px}
+.audio-art{background:linear-gradient(135deg,#1B4965,#2D6A4F);height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.audio-art .big-icon{font-size:64px;margin-bottom:10px}
+.audio-art h3{font-family:'Playfair Display',serif;color:var(--white);font-size:18px}
+.audio-art p{color:rgba(255,255,255,.6);font-size:12px;margin-top:4px}
+.audio-body{padding:20px 22px;background:var(--dark);flex:1}
+.audio-progress{margin-bottom:20px}
+.audio-bar-wrap{position:relative;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin-bottom:8px;cursor:pointer}
+.audio-bar-fill{height:100%;background:var(--saffron);border-radius:2px;width:35%;transition:width .5s linear}
+.audio-thumb{position:absolute;top:50%;width:14px;height:14px;background:var(--white);border-radius:50%;transform:translate(-50%,-50%);left:35%}
+.audio-times{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.5)}
+.audio-controls{display:flex;align-items:center;justify-content:center;gap:28px;margin-bottom:24px}
+.ctrl-btn{background:none;border:none;font-size:24px;cursor:pointer;color:rgba(255,255,255,.7);transition:transform .15s}
+.ctrl-btn:active{transform:scale(.9)}
+.play-btn{width:62px;height:62px;background:var(--saffron);border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;font-size:22px;cursor:pointer;transition:transform .15s}
+.play-btn:active{transform:scale(.93)}
+.audio-tracks{display:flex;flex-direction:column;gap:8px}
+.a-track{background:rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .2s}
+.a-track.on{background:rgba(232,93,4,.2)}
+.a-track-num{font-size:12px;color:rgba(255,255,255,.4);width:16px;text-align:center}
+.a-track-name{font-size:13px;color:var(--white);flex:1}
+.a-track-dur{font-size:11px;color:rgba(255,255,255,.4)}
+
+/* TOAST */
+.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:var(--white);padding:10px 18px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+
+<div class="outer">
+<div class="phone" id="phone">
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== SPLASH ===== -->
+<div class="screen active" id="s-splash">
+  <div style="background:var(--saffron);padding:12px 22px 8px;display:flex;justify-content:space-between"><span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.9)">9:41</span><span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.9)">⚡ 87%</span></div>
+  <div class="splash-body">
+    <div class="splash-deco"></div>
+    <div class="splash-deco2"></div>
+    <div class="splash-logo">🗺️</div>
+    <h1 class="splash">HarmonyMap</h1>
+    <p class="splash">Discover India's rich cultural heritage — temples, mosques, festivals, rituals, and traditions — all in one place.</p>
+    <button class="btn-primary" onclick="goTo('s-onboard')">Get Started →</button>
+    <button class="btn-outline" onclick="goTo('s-home')">I already have an account</button>
+    <div class="splash-tagline">Bridging cultures through learning</div>
+  </div>
+</div>
+
+<!-- ===== ONBOARDING ===== -->
+<div class="screen" id="s-onboard">
+  <div style="background:var(--teal);padding:12px 22px 8px;display:flex;justify-content:space-between"><span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.9)">9:41</span><span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.9)">⚡ 87%</span></div>
+  <div class="onboard-header">
+    <h2>Personalise your journey</h2>
+    <p>Help us show you the most relevant cultural content</p>
+  </div>
+  <div class="ob-step">
+    <div class="ob-dot on" id="od1"></div>
+    <div class="ob-dot" id="od2"></div>
+    <div class="ob-dot" id="od3"></div>
+  </div>
+  <div class="sbody" id="ob-pages">
+    <div class="ob-body" id="ob-p1">
+      <div class="ob-q">What's your religious background?</div>
+      <div class="ob-opts">
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">🛕</span>Hindu</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">🕌</span>Islamic</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">⛪</span>Christian</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">🕍</span>Sikh</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">🌐</span>Prefer not to say</button>
+      </div>
     </div>
+    <div class="ob-body" id="ob-p2" style="display:none">
+      <div class="ob-q">What do you want to explore most?</div>
+      <div class="ob-opts">
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">🏛️</span>Sacred Places &amp; Temples</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">🎉</span>Festivals &amp; Celebrations</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">📖</span>Rituals &amp; Traditions</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">🎵</span>Music &amp; Arts</button>
+      </div>
+    </div>
+    <div class="ob-body" id="ob-p3" style="display:none">
+      <div class="ob-q">How do you prefer to learn?</div>
+      <div class="ob-opts">
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">🎧</span>Audio Guides</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">📱</span>AR Experiences</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">🎯</span>Quizzes &amp; Games</button>
+        <button class="ob-opt" onclick="selOb(this)"><span class="ob-icon">📚</span>Reading &amp; Articles</button>
+      </div>
+    </div>
+  </div>
+  <button class="ob-next" id="ob-next-btn" onclick="obNext()">Continue →</button>
+</div>
 
-    <!-- Application Views loaded globally -->
-    <script src="js/views/splash.js"></script>
-    <script src="js/views/onboarding.js"></script>
-    <script src="js/views/auth.js"></script>
-    <script src="js/views/home.js"></script>
-    <script src="js/views/map.js"></script>
-    <script src="js/views/locationDetail.js"></script>
-    <script src="js/views/games.js"></script>
-    <script src="js/views/events.js"></script>
-    <script src="js/views/profile.js"></script>
-    
-    <!-- Main Application Router -->
-    <script src="js/app.js"></script>
-</body>
+<!-- ===== HOME ===== -->
+<div class="screen" id="s-home">
+  <div class="sbar" style="background:var(--saffron)"><span>9:41</span><span>⚡ 87%</span></div>
+  <div class="home-hdr">
+    <div class="greet">Namaste, Harshvardhan 🙏</div>
+    <h2>Explore India's Heritage</h2>
+    <div class="search" onclick="showToast('Search coming soon!')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span>Search temples, festivals...</span>
+    </div>
+  </div>
+  <div class="sbody">
+    <div class="home-body">
+      <div class="sec-hdr">Categories <span class="see-all" onclick="goTo('s-explore')">See all</span></div>
+      <div class="cats">
+        <div class="cat on" onclick="selCat(this)"><div class="cat-ic">🛕</div><div class="cat-lb">Hindu</div></div>
+        <div class="cat" onclick="selCat(this)"><div class="cat-ic">🕌</div><div class="cat-lb">Islamic</div></div>
+        <div class="cat" onclick="selCat(this)"><div class="cat-ic">⛪</div><div class="cat-lb">Christian</div></div>
+        <div class="cat" onclick="selCat(this)"><div class="cat-ic">🕍</div><div class="cat-lb">Sikh</div></div>
+      </div>
+
+      <div class="feat" onclick="goTo('s-explore')">
+        <div class="feat-tag">✨ Featured Today</div>
+        <h3>Diwali – Festival of Lights</h3>
+        <p>Explore the history, rituals, and regional variations of India's most celebrated festival.</p>
+        <button class="feat-btn" onclick="event.stopPropagation();goTo('s-explore')">Start Learning →</button>
+      </div>
+
+      <div class="sec-hdr">Places Near You <span class="see-all" onclick="goTo('s-map')">View map</span></div>
+      <div class="places">
+        <div class="pcard" onclick="goTo('s-detail')">
+          <div class="pcard-img" style="background:#FFF3EC">🛕</div>
+          <div class="pcard-inf"><div class="pcard-name">Trimbakeshwar</div><div class="pcard-loc">📍 Nashik</div></div>
+        </div>
+        <div class="pcard" onclick="goTo('s-detail')">
+          <div class="pcard-img" style="background:#E8F5E9">🕌</div>
+          <div class="pcard-inf"><div class="pcard-name">Sai Baba Mandir</div><div class="pcard-loc">📍 Shirdi</div></div>
+        </div>
+        <div class="pcard" onclick="goTo('s-detail')">
+          <div class="pcard-img" style="background:#E3F2FD">🏛️</div>
+          <div class="pcard-inf"><div class="pcard-name">Ajanta Caves</div><div class="pcard-loc">📍 Aurangabad</div></div>
+        </div>
+        <div class="pcard" onclick="goTo('s-detail')">
+          <div class="pcard-img" style="background:#F3E5F5">⛪</div>
+          <div class="pcard-inf"><div class="pcard-name">Holy Cross Church</div><div class="pcard-loc">📍 Nashik</div></div>
+        </div>
+      </div>
+
+      <div class="sec-hdr">Upcoming Festivals</div>
+      <div class="upcoming">
+        <div class="ev-card" onclick="goTo('s-explore')">
+          <div class="ev-date"><div class="ev-day">14</div><div class="ev-mon">APR</div></div>
+          <div><div class="ev-title">Baisakhi</div><div class="ev-sub">Sikh harvest festival • Punjab</div></div>
+          <div class="ev-badge" style="background:var(--teal-l);color:var(--teal)">3 days</div>
+        </div>
+        <div class="ev-card" onclick="goTo('s-explore')">
+          <div class="ev-date"><div class="ev-day">22</div><div class="ev-mon">APR</div></div>
+          <div><div class="ev-title">Easter</div><div class="ev-sub">Christian celebration • Nationwide</div></div>
+          <div class="ev-badge" style="background:var(--green-l);color:var(--green)">11 days</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni on" onclick="navTo('s-home',this)"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button>
+    <button class="ni" onclick="navTo('s-map',this)"><span class="ni-icon">🗺️</span><span class="ni-lbl">Map</span></button>
+    <button class="ni" onclick="navTo('s-quiz',this)"><span class="ni-icon">🎯</span><span class="ni-lbl">Quizzes</span></button>
+    <button class="ni" onclick="navTo('s-profile',this)"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ===== MAP ===== -->
+<div class="screen" id="s-map">
+  <div class="sbar" style="background:var(--saffron)"><span>9:41</span><span>⚡ 87%</span></div>
+  <div class="map-hdr">
+    <button class="back-btn" onclick="goBack()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h2>Cultural Map</h2>
+  </div>
+  <div class="map-area">
+    <svg class="map-svg" viewBox="0 0 360 250">
+      <rect width="360" height="250" fill="#C8E6C9"/>
+      <path d="M0,125 Q90,95 180,125 Q270,155 360,125" stroke="#B0BEC5" stroke-width="3" fill="none"/>
+      <path d="M180,0 Q160,80 180,125 Q200,170 180,250" stroke="#B0BEC5" stroke-width="2.5" fill="none"/>
+      <path d="M0,75 Q120,85 240,65 Q300,58 360,75" stroke="#CFD8DC" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+      <ellipse cx="70" cy="195" rx="44" ry="26" fill="#81D4FA" opacity=".55"/>
+      <text x="70" y="199" font-size="8" fill="#0277BD" text-anchor="middle" font-family="DM Sans,sans-serif">Godavari</text>
+      <ellipse cx="280" cy="55" rx="36" ry="18" fill="#A5D6A7" opacity=".45"/>
+      <ellipse cx="90" cy="50" rx="24" ry="14" fill="#A5D6A7" opacity=".45"/>
+      <rect x="145" y="110" width="70" height="30" rx="6" fill="#ECEFF1" opacity=".5"/>
+      <text x="180" y="129" font-size="8" fill="#546E7A" text-anchor="middle" font-family="DM Sans,sans-serif">Nashik District</text>
+    </svg>
+    <div class="pin" style="left:50%;top:58%" onclick="goTo('s-detail')">
+      <div class="pin-lbl">Nashik</div>
+      <div class="pin-dot"><span>🛕</span></div>
+    </div>
+    <div class="pin" style="left:28%;top:38%" onclick="goTo('s-detail')">
+      <div class="pin-lbl">Shirdi</div>
+      <div class="pin-dot" style="background:var(--teal)"><span>🕌</span></div>
+    </div>
+    <div class="pin" style="left:72%;top:68%" onclick="goTo('s-detail')">
+      <div class="pin-lbl">Pune</div>
+      <div class="pin-dot" style="background:var(--green)"><span>🛕</span></div>
+    </div>
+    <div class="pin" style="left:76%;top:24%" onclick="goTo('s-detail')">
+      <div class="pin-lbl">Aurangabad</div>
+      <div class="pin-dot" style="background:#7B4EA6"><span>🏛️</span></div>
+    </div>
+    <div class="map-ctrl">
+      <button class="mc-btn" onclick="showToast('Zoomed in!')">+</button>
+      <button class="mc-btn" onclick="showToast('Zoomed out!')">−</button>
+      <button class="mc-btn" onclick="showToast('Locating you...')">📍</button>
+    </div>
+  </div>
+  <div class="chips">
+    <div class="chip on" onclick="selChip(this)">All</div>
+    <div class="chip" onclick="selChip(this)">Temples</div>
+    <div class="chip" onclick="selChip(this)">Mosques</div>
+    <div class="chip" onclick="selChip(this)">Churches</div>
+    <div class="chip" onclick="selChip(this)">Caves</div>
+    <div class="chip" onclick="selChip(this)">Festivals</div>
+  </div>
+  <div class="sbody">
+    <div class="loc-list">
+      <div class="loc-item" onclick="goTo('s-detail')">
+        <div class="loc-em">🛕</div>
+        <div><div class="loc-name">Trimbakeshwar Temple</div><div class="loc-type">Jyotirlinga • Nashik</div></div>
+        <div class="loc-badge">AR Ready</div>
+      </div>
+      <div class="loc-item" onclick="goTo('s-detail')">
+        <div class="loc-em">🕌</div>
+        <div><div class="loc-name">Sai Baba Samadhi Mandir</div><div class="loc-type">Dargah • Shirdi</div></div>
+        <div class="loc-badge">Audio</div>
+      </div>
+      <div class="loc-item" onclick="goTo('s-detail')">
+        <div class="loc-em">🏛️</div>
+        <div><div class="loc-name">Ajanta Caves</div><div class="loc-type">Buddhist Heritage • Aurangabad</div></div>
+        <div class="loc-badge">AR Ready</div>
+      </div>
+      <div class="loc-item" onclick="goTo('s-detail')">
+        <div class="loc-em">⛪</div>
+        <div><div class="loc-name">Holy Cross Church</div><div class="loc-type">Catholic • Nashik</div></div>
+        <div class="loc-badge">Audio</div>
+      </div>
+      <div class="loc-item" onclick="goTo('s-detail')">
+        <div class="loc-em">🕍</div>
+        <div><div class="loc-name">Gurudwara Sikh Sangat</div><div class="loc-type">Sikh • Nashik</div></div>
+        <div class="loc-badge">Guide</div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="navTo('s-home',this)"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button>
+    <button class="ni on" onclick="navTo('s-map',this)"><span class="ni-icon">🗺️</span><span class="ni-lbl">Map</span></button>
+    <button class="ni" onclick="navTo('s-quiz',this)"><span class="ni-icon">🎯</span><span class="ni-lbl">Quizzes</span></button>
+    <button class="ni" onclick="navTo('s-profile',this)"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ===== DETAIL ===== -->
+<div class="screen" id="s-detail">
+  <div class="sbar" style="background:transparent;position:absolute;z-index:2"><span style="color:white">9:41</span><span style="color:white">⚡ 87%</span></div>
+  <div class="detail-hero">
+    <button class="hero-back" onclick="goBack()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="hero-bm" id="bm-btn" onclick="toggleBm()">🔖</button>
+    🛕
+  </div>
+  <div class="detail-body">
+    <h2>Trimbakeshwar Temple</h2>
+    <div class="detail-sub">📍 Nashik, Maharashtra</div>
+    <div class="tags">
+      <span class="tag tag-r">Hindu</span>
+      <span class="tag tag-s">Maharashtra</span>
+      <span class="tag tag-a">AR Available</span>
+    </div>
+    <div class="detail-acts">
+      <button class="act-btn act-primary" onclick="goTo('s-ar')">📱 Launch AR Experience</button>
+      <button class="act-btn act-sec" onclick="goTo('s-audio')">🎧 Audio Guide</button>
+      <button class="act-btn act-sec" onclick="showToast('Direction opened in Maps')">🧭 Get Directions</button>
+    </div>
+    <div class="d-sec-title">About this place</div>
+    <div class="d-text">One of the twelve Jyotirlingas, Trimbakeshwar is a sacred Shiva temple near Nashik where the holy Godavari river originates. The temple holds immense religious significance in Hindu tradition and attracts millions of pilgrims each year.</div>
+    <div class="d-sec-title">Rituals &amp; Practices</div>
+    <div class="ritual-list">
+      <div class="ritual" onclick="goTo('s-audio')">
+        <div class="r-ic">🪔</div>
+        <div><div class="r-name">Abhishek Puja</div><div class="r-dur">~20 min • Morning</div></div>
+        <div class="r-play">▶</div>
+      </div>
+      <div class="ritual" onclick="goTo('s-audio')">
+        <div class="r-ic">🌸</div>
+        <div><div class="r-name">Rudrabhishek</div><div class="r-dur">~45 min • Special</div></div>
+        <div class="r-play">▶</div>
+      </div>
+      <div class="ritual" onclick="goTo('s-audio')">
+        <div class="r-ic">🔔</div>
+        <div><div class="r-name">Evening Aarti</div><div class="r-dur">~15 min • Sunset</div></div>
+        <div class="r-play">▶</div>
+      </div>
+    </div>
+    <div class="d-sec-title">Photo Gallery</div>
+    <div class="gallery">
+      <div class="gal-item" style="background:#FFF3EC" onclick="showToast('Viewing photo')">🛕</div>
+      <div class="gal-item" style="background:#E8F5E9" onclick="showToast('Viewing photo')">🌿</div>
+      <div class="gal-item" style="background:#E3F2FD" onclick="showToast('Viewing photo')">🏔️</div>
+      <div class="gal-item" style="background:#FFF3EC" onclick="showToast('Viewing photo')">🪔</div>
+      <div class="gal-item" style="background:#F3E5F5" onclick="showToast('Viewing photo')">🌺</div>
+      <div class="gal-item" style="background:#E8F5E9" onclick="showToast('Viewing photo')">💧</div>
+    </div>
+    <div class="d-sec-title">Did You Know?</div>
+    <div class="d-text">The Trimbakeshwar Shiva Lingam has three faces representing Brahma, Vishnu and Shiva. It is the only Jyotirlinga with this unique characteristic.</div>
+  </div>
+</div>
+
+<!-- ===== AR SCREEN ===== -->
+<div class="screen" id="s-ar">
+  <div class="sbar" style="background:transparent;position:absolute;top:0;left:0;right:0;z-index:5"><span style="color:white">9:41</span><span style="color:white">⚡ 87%</span></div>
+  <div class="ar-cam">
+    <svg class="ar-grid" viewBox="0 0 360 740" xmlns="http://www.w3.org/2000/svg">
+      <defs><pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,.3)" stroke-width=".5"/></pattern></defs>
+      <rect width="360" height="740" fill="#1A2A1A"/>
+      <rect width="360" height="740" fill="url(#g)"/>
+    </svg>
+    <button class="ar-back" onclick="goBack()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="ar-crosshair">
+      <div class="ar-tl"></div><div class="ar-tr"></div>
+      <div class="ar-bl"></div><div class="ar-br"></div>
+      <div class="ar-scan"></div>
+    </div>
+    <div class="ar-label">Point your camera at the temple<br>to activate AR overlay</div>
+    <div class="ar-info">
+      <h3>🛕 Trimbakeshwar Temple</h3>
+      <p>Built in the 18th century by Peshwa Nanasaheb. The temple architecture reflects classic Hemadpanthi style with intricate stone carvings.</p>
+    </div>
+    <div class="ar-btns">
+      <button class="ar-btn" onclick="showToast('Info overlay enabled!')">ℹ️ Show Info</button>
+      <button class="ar-btn" onclick="goTo('s-audio')">🎧 Audio</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EXPLORE ===== -->
+<div class="screen" id="s-explore">
+  <div class="sbar" style="background:var(--teal)"><span>9:41</span><span>⚡ 87%</span></div>
+  <div class="exp-hdr">
+    <button class="back-btn" onclick="goBack()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h2>Explore Cultures</h2>
+  </div>
+  <div class="sbody">
+    <div class="exp-body">
+      <div class="rel-card" onclick="goTo('s-detail')">
+        <div class="rel-top" style="background:#FFF3EC">🛕</div>
+        <div class="rel-body">
+          <h3>Hinduism</h3>
+          <p>The world's oldest religion, with a rich tapestry of deities, rituals, and philosophies. Explore temples, festivals, and sacred texts.</p>
+          <div class="rel-facts">
+            <span class="fact-pill">1.2B followers</span>
+            <span class="fact-pill">4 Vedas</span>
+            <span class="fact-pill">33 Million deities</span>
+          </div>
+        </div>
+      </div>
+      <div class="rel-card" onclick="goTo('s-detail')">
+        <div class="rel-top" style="background:#E3F2FD">🕌</div>
+        <div class="rel-body">
+          <h3>Islam</h3>
+          <p>The second largest religion globally, founded on the Five Pillars. Explore mosques, Eid celebrations, and the rich tradition of Islamic art.</p>
+          <div class="rel-facts">
+            <span class="fact-pill" style="background:var(--teal-l);color:var(--teal)">1.8B followers</span>
+            <span class="fact-pill" style="background:var(--teal-l);color:var(--teal)">5 Pillars</span>
+            <span class="fact-pill" style="background:var(--teal-l);color:var(--teal)">114 Surahs</span>
+          </div>
+        </div>
+      </div>
+      <div class="rel-card" onclick="goTo('s-detail')">
+        <div class="rel-top" style="background:#E8F5E9">⛪</div>
+        <div class="rel-body">
+          <h3>Christianity</h3>
+          <p>Centred on the life and teachings of Jesus Christ. Discover churches, Christmas, Easter, and the diversity of Christian practice across India.</p>
+          <div class="rel-facts">
+            <span class="fact-pill" style="background:var(--green-l);color:var(--green)">2.4B followers</span>
+            <span class="fact-pill" style="background:var(--green-l);color:var(--green)">2 Testaments</span>
+          </div>
+        </div>
+      </div>
+      <div class="rel-card" onclick="goTo('s-detail')">
+        <div class="rel-top" style="background:#F3E5F5">🕍</div>
+        <div class="rel-body">
+          <h3>Sikhism</h3>
+          <p>A monotheistic faith founded in Punjab. Explore Gurudwaras, Langar (community meals), and festivals like Baisakhi and Gurpurab.</p>
+          <div class="rel-facts">
+            <span class="fact-pill" style="background:#EDE7F6;color:#4527A0">30M followers</span>
+            <span class="fact-pill" style="background:#EDE7F6;color:#4527A0">10 Gurus</span>
+          </div>
+        </div>
+      </div>
+      <div class="rel-card" onclick="goTo('s-detail')">
+        <div class="rel-top" style="background:#FFF8E1">☸️</div>
+        <div class="rel-body">
+          <h3>Buddhism</h3>
+          <p>Founded by Siddhartha Gautama, Buddhism emphasises the path to enlightenment. Explore stupas, caves, and meditation traditions.</p>
+          <div class="rel-facts">
+            <span class="fact-pill" style="background:#FFF8E1;color:#F57F17">520M followers</span>
+            <span class="fact-pill" style="background:#FFF8E1;color:#F57F17">Noble Eightfold Path</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="screen" id="s-quiz">
+  <div class="sbar" style="background:var(--teal)"><span>9:41</span><span>⚡ 87%</span></div>
+  <div class="quiz-hdr">
+    <button class="back-btn" onclick="goBack()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h2>Mini Quiz</h2>
+    <div class="prog-track"><div class="prog-fill" id="qprog" style="width:33%"></div></div>
+    <span style="color:rgba(255,255,255,.8);font-size:12px" id="q-counter">1/3</span>
+  </div>
+  <div class="sbody">
+    <div class="quiz-body" id="quiz-body">
+      <div class="streak">🔥 3-day streak! Keep it up!</div>
+      <div class="q-num" id="q-num">Question 1 of 3 • Cultural Knowledge</div>
+      <div class="q-text" id="q-text">Which festival marks the end of the holy month of Ramadan?</div>
+      <div class="q-opts" id="q-opts">
+        <button class="q-opt" onclick="answerQ(this,false,'Diwali is a Hindu festival of lights, celebrated in October or November.')">Diwali</button>
+        <button class="q-opt" onclick="answerQ(this,true,'Eid al-Fitr marks the end of Ramadan with prayer, feasting and giving thanks.')">Eid al-Fitr</button>
+        <button class="q-opt" onclick="answerQ(this,false,'Holi is the Hindu spring festival of colours.')">Holi</button>
+        <button class="q-opt" onclick="answerQ(this,false,'Navratri is a 9-night Hindu festival dedicated to the goddess Durga.')">Navratri</button>
+      </div>
+      <div id="q-fb" style="display:none" class="q-feedback">
+        <div class="q-fb-title" id="fb-title">✓ Correct!</div>
+        <div class="q-fb-text" id="fb-text"></div>
+      </div>
+      <button class="q-next" id="q-next" style="display:none" onclick="nextQ()">Next Question →</button>
+    </div>
+    <div id="quiz-result" style="display:none" class="q-result">
+      <div class="trophy">🏆</div>
+      <div class="score-circle"><div class="score-num" id="final-score">2/3</div><div class="score-lbl">Score</div></div>
+      <h2>Well Done!</h2>
+      <p>You scored 2 out of 3. Keep exploring to improve your cultural knowledge!</p>
+      <button class="q-next" onclick="restartQuiz()">Try Again →</button>
+      <br><br>
+      <button class="q-next" style="background:var(--saffron)" onclick="navTo('s-home',null)">Back to Home</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="navTo('s-home',this)"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button>
+    <button class="ni" onclick="navTo('s-map',this)"><span class="ni-icon">🗺️</span><span class="ni-lbl">Map</span></button>
+    <button class="ni on" onclick="navTo('s-quiz',this)"><span class="ni-icon">🎯</span><span class="ni-lbl">Quizzes</span></button>
+    <button class="ni" onclick="navTo('s-profile',this)"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></button>
+  </div>
+</div>
+
+<!-- ===== AUDIO ===== -->
+<div class="screen" id="s-audio">
+  <div class="sbar" style="background:var(--dark)"><span>9:41</span><span>⚡ 87%</span></div>
+  <div class="audio-hdr">
+    <button class="back-btn" onclick="goBack()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h2>Audio Guide</h2>
+  </div>
+  <div class="audio-art">
+    <div class="big-icon">🛕</div>
+    <h3>Trimbakeshwar Temple</h3>
+    <p>Expert narrated cultural guide</p>
+  </div>
+  <div class="audio-body">
+    <div class="audio-progress">
+      <div class="audio-bar-wrap" onclick="seekAudio(event,this)">
+        <div class="audio-bar-fill" id="audio-fill"></div>
+        <div class="audio-thumb" id="audio-thumb"></div>
+      </div>
+      <div class="audio-times"><span id="cur-time">4:12</span><span>12:05</span></div>
+    </div>
+    <div class="audio-controls">
+      <button class="ctrl-btn" onclick="showToast('Previous track')">⏮</button>
+      <button class="ctrl-btn" onclick="showToast('Rewind 10s')">⏪</button>
+      <button class="play-btn" id="play-btn" onclick="togglePlay()">▶</button>
+      <button class="ctrl-btn" onclick="showToast('Forward 10s')">⏩</button>
+      <button class="ctrl-btn" onclick="showToast('Next track')">⏭</button>
+    </div>
+    <div class="audio-tracks">
+      <div class="a-track on" onclick="selTrack(this,0)"><span class="a-track-num">1</span><span class="a-track-name">Introduction & History</span><span class="a-track-dur">3:45</span></div>
+      <div class="a-track" onclick="selTrack(this,1)"><span class="a-track-num">2</span><span class="a-track-name">The Jyotirlinga Story</span><span class="a-track-dur">5:20</span></div>
+      <div class="a-track" onclick="selTrack(this,2)"><span class="a-track-num">3</span><span class="a-track-name">Architecture & Carvings</span><span class="a-track-dur">4:15</span></div>
+      <div class="a-track" onclick="selTrack(this,3)"><span class="a-track-num">4</span><span class="a-track-name">Rituals Explained</span><span class="a-track-dur">6:40</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROFILE ===== -->
+<div class="screen" id="s-profile">
+  <div class="sbar" style="background:var(--saffron)"><span>9:41</span><span>⚡ 87%</span></div>
+  <div class="prof-hdr">
+    <div class="avatar">🧑‍🎓</div>
+    <h2>Harshvardhan Patil</h2>
+    <div class="prof-level">Cultural Explorer • Level 4</div>
+    <div class="prof-xp"><div class="prof-xp-fill"></div></div>
+  </div>
+  <div class="sbody">
+    <div class="prof-body">
+      <div class="stats-g">
+        <div class="stat-c"><div class="stat-n">12</div><div class="stat-l">Places Visited</div></div>
+        <div class="stat-c"><div class="stat-n">38</div><div class="stat-l">Quizzes Done</div></div>
+        <div class="stat-c"><div class="stat-n">4</div><div class="stat-l">Religions</div></div>
+      </div>
+      <div class="sec-hdr" style="margin-bottom:10px">Badges Earned</div>
+      <div class="badges-r">
+        <div class="badge"><div class="badge-ic">🏆</div><div class="badge-nm">Top Learner</div></div>
+        <div class="badge"><div class="badge-ic">🗺️</div><div class="badge-nm">Explorer</div></div>
+        <div class="badge"><div class="badge-ic">🎧</div><div class="badge-nm">Audio Fan</div></div>
+        <div class="badge"><div class="badge-ic">🔥</div><div class="badge-nm">3-Day Streak</div></div>
+      </div>
+      <div class="sec-hdr" style="margin:16px 0 10px">Learning Progress</div>
+      <div class="prog-sect">
+        <div class="prog-item"><div class="prog-top"><span>🛕 Hinduism</span><span style="color:var(--saffron)">72%</span></div><div class="prog-bar"><div class="prog-f" style="width:72%;background:var(--saffron)"></div></div></div>
+        <div class="prog-item"><div class="prog-top"><span>🕌 Islam</span><span style="color:var(--teal)">45%</span></div><div class="prog-bar"><div class="prog-f" style="width:45%;background:var(--teal)"></div></div></div>
+        <div class="prog-item"><div class="prog-top"><span>⛪ Christianity</span><span style="color:var(--green)">28%</span></div><div class="prog-bar"><div class="prog-f" style="width:28%;background:var(--green)"></div></div></div>
+        <div class="prog-item"><div class="prog-top"><span>🕍 Sikhism</span><span style="color:#7B4EA6">15%</span></div><div class="prog-bar"><div class="prog-f" style="width:15%;background:#7B4EA6"></div></div></div>
+        <div class="prog-item"><div class="prog-top"><span>☸️ Buddhism</span><span style="color:#E65100">8%</span></div><div class="prog-bar"><div class="prog-f" style="width:8%;background:#E65100"></div></div></div>
+      </div>
+      <button class="settings-btn" onclick="showToast('Settings coming soon!')">⚙️ Settings &amp; Preferences</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="navTo('s-home',this)"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button>
+    <button class="ni" onclick="navTo('s-map',this)"><span class="ni-icon">🗺️</span><span class="ni-lbl">Map</span></button>
+    <button class="ni" onclick="navTo('s-quiz',this)"><span class="ni-icon">🎯</span><span class="ni-lbl">Quizzes</span></button>
+    <button class="ni on" onclick="navTo('s-profile',this)"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></button>
+  </div>
+</div>
+
+</div>
+<div class="phone-label" id="plbl">Splash Screen</div>
+</div>
+
+<script>
+var navHistory=[];
+var current='s-splash';
+var screenNames={'s-splash':'Splash Screen','s-onboard':'Onboarding','s-home':'Home','s-map':'Cultural Map','s-detail':'Place Detail','s-ar':'AR Experience','s-explore':'Explore Cultures','s-quiz':'Mini Quiz','s-audio':'Audio Guide','s-profile':'Profile'};
+var obStep=1;
+var qIndex=0;
+var qScore=0;
+var qAnswered=false;
+var isPlaying=false;
+var audioInterval=null;
+var audioPos=35;
+
+var questions=[
+  {q:"Which festival marks the end of the holy month of Ramadan?",opts:["Diwali","Eid al-Fitr","Holi","Navratri"],correct:1,expl:["Diwali is a Hindu festival of lights, celebrated in October or November.","Eid al-Fitr marks the end of Ramadan with prayer, feasting and giving thanks.","Holi is the Hindu spring festival of colours.","Navratri is a 9-night Hindu festival dedicated to Goddess Durga."]},
+  {q:"What is the holy scripture of Sikhism called?",opts:["Quran","Guru Granth Sahib","Vedas","Bible"],correct:1,expl:["The Quran is the sacred text of Islam.","The Guru Granth Sahib is the eternal living Guru of the Sikhs, their holy scripture.","The Vedas are the ancient sacred texts of Hinduism.","The Bible is the sacred text of Christianity."]},
+  {q:"Which river originates near Trimbakeshwar Temple in Nashik?",opts:["Ganga","Yamuna","Godavari","Narmada"],correct:2,expl:["The Ganga originates in the Himalayas near Gangotri.","The Yamuna originates in the Yamunotri glacier in Uttarakhand.","The Godavari, also called the Dakshin Ganga, originates near Trimbakeshwar in Nashik.","The Narmada originates in Madhya Pradesh."]}
+];
+
+function goTo(id){
+  var from=document.getElementById(current);
+  var to=document.getElementById(id);
+  navHistory.push(current);
+  from.classList.add('exit-left');
+  setTimeout(function(){from.classList.remove('active','exit-left');},280);
+  to.classList.add('active');
+  current=id;
+  document.getElementById('plbl').textContent=screenNames[id]||id;
+  setTimeout(function(){to.scrollTop=0;var b=to.querySelector('.sbody');if(b)b.scrollTop=0;},50);
+}
+
+function goBack(){
+  if(navHistory.length===0)return;
+  var prev=navHistory.pop();
+  var from=document.getElementById(current);
+  var to=document.getElementById(prev);
+  from.classList.remove('active');
+  to.classList.add('active');
+  current=prev;
+  document.getElementById('plbl').textContent=screenNames[prev]||prev;
+}
+
+function navTo(id,btn){
+  document.querySelectorAll('#s-home .ni,#s-map .ni,#s-quiz .ni,#s-profile .ni').forEach(function(n){n.classList.remove('on');});
+  if(btn)btn.classList.add('on');
+  navHistory=[];
+  var from=document.getElementById(current);
+  var to=document.getElementById(id);
+  from.classList.remove('active');
+  to.classList.add('active');
+  current=id;
+  document.getElementById('plbl').textContent=screenNames[id]||id;
+}
+
+var obSelected=false;
+function selOb(el){
+  var par=el.closest('.ob-opts');
+  par.querySelectorAll('.ob-opt').forEach(function(o){o.classList.remove('sel');});
+  el.classList.add('sel');
+  obSelected=true;
+}
+
+function obNext(){
+  if(!obSelected){showToast('Please select an option');return;}
+  if(obStep===3){goTo('s-home');return;}
+  document.getElementById('ob-p'+obStep).style.display='none';
+  obStep++;
+  document.getElementById('ob-p'+obStep).style.display='block';
+  document.querySelectorAll('.ob-dot').forEach(function(d,i){d.classList.toggle('on',i<obStep);});
+  obSelected=false;
+  if(obStep===3)document.getElementById('ob-next-btn').textContent='Get Started!';
+}
+
+function selCat(el){
+  document.querySelectorAll('.cat').forEach(function(c){c.classList.remove('on');});
+  el.classList.add('on');
+}
+
+function selChip(el){
+  document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});
+  el.classList.add('on');
+  showToast('Filtering: '+el.textContent);
+}
+
+var bookmarked=false;
+function toggleBm(){
+  bookmarked=!bookmarked;
+  document.getElementById('bm-btn').textContent=bookmarked?'✅':'🔖';
+  showToast(bookmarked?'Bookmarked!':'Bookmark removed');
+}
+
+function answerQ(el,correct,expl){
+  if(qAnswered)return;
+  qAnswered=true;
+  var opts=document.querySelectorAll('.q-opt');
+  opts.forEach(function(o){o.disabled=true;});
+  if(correct){el.classList.add('correct');qScore++;}
+  else{el.classList.add('wrong');opts[questions[qIndex].correct].classList.add('correct');}
+  var fb=document.getElementById('q-fb');
+  var fbt=document.getElementById('fb-title');
+  var fbtx=document.getElementById('fb-text');
+  fb.style.display='block';
+  fb.className='q-feedback'+(correct?'':' wrong-fb');
+  fbt.className='q-fb-title'+(correct?'':' wrong');
+  fbt.textContent=correct?'✓ Correct!':'✗ Not quite!';
+  fbtx.textContent=expl;
+  document.getElementById('q-next').style.display='block';
+  var prog=[33,66,100];
+  document.getElementById('qprog').style.width=prog[qIndex]+'%';
+}
+
+function nextQ(){
+  qIndex++;
+  if(qIndex>=questions.length){
+    document.getElementById('quiz-body').style.display='none';
+    document.getElementById('quiz-result').style.display='block';
+    document.getElementById('final-score').textContent=qScore+'/'+questions.length;
+    return;
+  }
+  var q=questions[qIndex];
+  document.getElementById('q-num').textContent='Question '+(qIndex+1)+' of '+questions.length+' • Cultural Knowledge';
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('q-counter').textContent=(qIndex+1)+'/'+questions.length;
+  var opts=document.getElementById('q-opts');
+  opts.innerHTML='';
+  q.opts.forEach(function(opt,i){
+    var b=document.createElement('button');
+    b.className='q-opt';
+    b.textContent=opt;
+    var isC=(i===q.correct);
+    b.onclick=function(){answerQ(b,isC,q.expl[i]);};
+    opts.appendChild(b);
+  });
+  document.getElementById('q-fb').style.display='none';
+  document.getElementById('q-next').style.display='none';
+  qAnswered=false;
+}
+
+function restartQuiz(){
+  qIndex=0;qScore=0;qAnswered=false;
+  document.getElementById('quiz-body').style.display='block';
+  document.getElementById('quiz-result').style.display='none';
+  document.getElementById('q-num').textContent='Question 1 of 3 • Cultural Knowledge';
+  document.getElementById('q-text').textContent=questions[0].q;
+  document.getElementById('q-counter').textContent='1/3';
+  document.getElementById('qprog').style.width='33%';
+  var opts=document.getElementById('q-opts');
+  opts.innerHTML='';
+  questions[0].opts.forEach(function(opt,i){
+    var b=document.createElement('button');b.className='q-opt';b.textContent=opt;
+    var isC=(i===questions[0].correct);
+    b.onclick=function(){answerQ(b,isC,questions[0].expl[i]);};
+    opts.appendChild(b);
+  });
+  document.getElementById('q-fb').style.display='none';
+  document.getElementById('q-next').style.display='none';
+}
+
+function togglePlay(){
+  isPlaying=!isPlaying;
+  document.getElementById('play-btn').textContent=isPlaying?'⏸':'▶';
+  if(isPlaying){
+    audioInterval=setInterval(function(){
+      audioPos=Math.min(audioPos+.5,100);
+      document.getElementById('audio-fill').style.width=audioPos+'%';
+      document.getElementById('audio-thumb').style.left=audioPos+'%';
+      var mins=Math.floor(audioPos/100*12);var secs=Math.floor((audioPos/100*725)%60);
+      document.getElementById('cur-time').textContent=mins+':'+(secs<10?'0':'')+secs;
+      if(audioPos>=100){clearInterval(audioInterval);isPlaying=false;document.getElementById('play-btn').textContent='▶';}
+    },200);
+  }else{clearInterval(audioInterval);}
+}
+
+function seekAudio(e,bar){
+  var rect=bar.getBoundingClientRect();
+  audioPos=Math.round(Math.min(100,Math.max(0,(e.clientX-rect.left)/rect.width*100)));
+  document.getElementById('audio-fill').style.width=audioPos+'%';
+  document.getElementById('audio-thumb').style.left=audioPos+'%';
+}
+
+var trackDurs=['3:45','5:20','4:15','6:40'];
+function selTrack(el,idx){
+  document.querySelectorAll('.a-track').forEach(function(t){t.classList.remove('on');});
+  el.classList.add('on');
+  audioPos=0;
+  document.getElementById('audio-fill').style.width='0%';
+  document.getElementById('audio-thumb').style.left='0%';
+  document.getElementById('cur-time').textContent='0:00';
+  if(isPlaying){clearInterval(audioInterval);isPlaying=false;document.getElementById('play-btn').textContent='▶';}
+  showToast('Now playing track '+(idx+1));
+}
+
+var toastTimeout;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout=setTimeout(function(){t.classList.remove('show');},2000);
+}
+</script>
 </html>
