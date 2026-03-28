@@ -433,7 +433,8 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
 
       <div class="sec-hdr">Categories <span class="see-all" onclick="goTo('s-explore')">See all</span></div>
       <div class="cats">
-        <div class="cat on" onclick="selCat(this)"><div class="cat-ic">🛕</div><div class="cat-lb">Hindu</div></div>
+        <div class="cat on" onclick="selCat(this)"><div class="cat-ic">✨</div><div class="cat-lb">All</div></div>
+        <div class="cat" onclick="selCat(this)"><div class="cat-ic">🛕</div><div class="cat-lb">Hindu</div></div>
         <div class="cat" onclick="selCat(this)"><div class="cat-ic">🕌</div><div class="cat-lb">Islamic</div></div>
         <div class="cat" onclick="selCat(this)"><div class="cat-ic">⛪</div><div class="cat-lb">Christian</div></div>
         <div class="cat" onclick="selCat(this)"><div class="cat-ic">🕍</div><div class="cat-lb">Sikh</div></div>
@@ -447,22 +448,26 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
       </div>
 
       <div class="sec-hdr">Places Near You <span class="see-all" onclick="goTo('s-map')">View map</span></div>
-      <div class="places">
-        <div class="pcard" onclick="openPlace('trimbakeshwar')">
+      <div class="places" id="home-places-list">
+        <div class="pcard" data-cat="Hindu" onclick="openPlace('trimbakeshwar')">
           <div class="pcard-img" style="background:#FFF3EC">🛕</div>
           <div class="pcard-inf"><div class="pcard-name">Trimbakeshwar</div><div class="pcard-loc">📍 Nashik</div></div>
         </div>
-        <div class="pcard" onclick="openPlace('saibaba')">
+        <div class="pcard" data-cat="Islamic" onclick="openPlace('saibaba')">
           <div class="pcard-img" style="background:#E8F5E9">🕌</div>
           <div class="pcard-inf"><div class="pcard-name">Sai Baba Mandir</div><div class="pcard-loc">📍 Shirdi</div></div>
         </div>
-        <div class="pcard" onclick="openPlace('ajanta')">
+        <div class="pcard" data-cat="Buddhist" onclick="openPlace('ajanta')">
           <div class="pcard-img" style="background:#E3F2FD">🏛️</div>
           <div class="pcard-inf"><div class="pcard-name">Ajanta Caves</div><div class="pcard-loc">📍 Aurangabad</div></div>
         </div>
-        <div class="pcard" onclick="openPlace('holycross')">
+        <div class="pcard" data-cat="Christian" onclick="openPlace('holycross')">
           <div class="pcard-img" style="background:#F3E5F5">⛪</div>
           <div class="pcard-inf"><div class="pcard-name">Holy Cross Church</div><div class="pcard-loc">📍 Nashik</div></div>
+        </div>
+        <div class="pcard" data-cat="Sikh" onclick="openPlace('gurudwara')">
+          <div class="pcard-img" style="background:#FFF8E1">🕍</div>
+          <div class="pcard-inf"><div class="pcard-name">Gurudwara Sikh Sangat</div><div class="pcard-loc">📍 Nashik</div></div>
         </div>
       </div>
 
@@ -541,28 +546,28 @@ body{background:var(--bg);display:flex;justify-content:center;align-items:flex-s
     <div class="chip" onclick="selChip(this)">Festivals</div>
   </div>
   <div class="sbody">
-    <div class="loc-list">
-      <div class="loc-item" onclick="openPlace('trimbakeshwar')">
+    <div class="loc-list" id="map-loc-list">
+      <div class="loc-item" data-cat="Hindu" onclick="openPlace('trimbakeshwar')">
         <div class="loc-em">🛕</div>
         <div><div class="loc-name">Trimbakeshwar Temple</div><div class="loc-type">Jyotirlinga • Nashik</div></div>
         <div class="loc-badge">AR Ready</div>
       </div>
-      <div class="loc-item" onclick="openPlace('saibaba')">
+      <div class="loc-item" data-cat="Islamic" onclick="openPlace('saibaba')">
         <div class="loc-em">🕌</div>
         <div><div class="loc-name">Sai Baba Samadhi Mandir</div><div class="loc-type">Dargah • Shirdi</div></div>
         <div class="loc-badge">Audio</div>
       </div>
-      <div class="loc-item" onclick="openPlace('ajanta')">
+      <div class="loc-item" data-cat="Buddhist" onclick="openPlace('ajanta')">
         <div class="loc-em">🏛️</div>
         <div><div class="loc-name">Ajanta Caves</div><div class="loc-type">Buddhist Heritage • Aurangabad</div></div>
         <div class="loc-badge">AR Ready</div>
       </div>
-      <div class="loc-item" onclick="openPlace('holycross')">
+      <div class="loc-item" data-cat="Christian" onclick="openPlace('holycross')">
         <div class="loc-em">⛪</div>
         <div><div class="loc-name">Holy Cross Church</div><div class="loc-type">Catholic • Nashik</div></div>
         <div class="loc-badge">Audio</div>
       </div>
-      <div class="loc-item" onclick="openPlace('gurudwara')">
+      <div class="loc-item" data-cat="Sikh" onclick="openPlace('gurudwara')">
         <div class="loc-em">🕍</div>
         <div><div class="loc-name">Gurudwara Sikh Sangat</div><div class="loc-type">Sikh • Nashik</div></div>
         <div class="loc-badge">Guide</div>
@@ -1052,12 +1057,36 @@ function obNext(){
 function selCat(el){
   document.querySelectorAll('.cat').forEach(function(c){c.classList.remove('on');});
   el.classList.add('on');
+  var catName = el.querySelector('.cat-lb').innerText.trim();
+  
+  var cards = document.querySelectorAll('#home-places-list .pcard');
+  cards.forEach(function(card){
+    if(catName === 'All' || card.getAttribute('data-cat') === catName) {
+      card.style.display = 'inline-block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
 }
 
 function selChip(el){
   document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});
   el.classList.add('on');
-  showToast('Filtering: '+el.textContent);
+  var catName = el.innerText.trim();
+  
+  var typeMap = { 'Temples':'Hindu', 'Mosques':'Islamic', 'Churches':'Christian', 'Caves':'Buddhist' };
+  var target = typeMap[catName];
+  
+  var items = document.querySelectorAll('#map-loc-list .loc-item');
+  items.forEach(function(item){
+    if (catName === 'All' || catName === 'Festivals') {
+      item.style.display = 'flex';
+    } else if (item.getAttribute('data-cat') === target) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
 }
 
 var bookmarked=false;
